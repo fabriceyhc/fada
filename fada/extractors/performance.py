@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import evaluate
 from transformers import pipeline, AutoTokenizer
-from huggingface_hub import HfApi, ModelFilter
+from huggingface_hub import HfApi
 
 from fada.utils import vectorize, ConfiguredMetric
 
@@ -44,15 +44,9 @@ class PerformanceExtractor:
                     search_name = self.builder_name
                 else:
                     search_name = self.config_name
-                
-                model_filter = ModelFilter(
-                    task="text-classification",
-                    library="pytorch",
-                    # model_name=dataset_name,
-                    trained_dataset=search_name)
 
-                model_id = next(iter(self.api.list_models(filter=model_filter)))
-                model_id = getattr(model_id, 'modelId')
+                model_id = next(iter(self.api.list_models(task="text-classification", library="pytorch", trained_dataset=search_name)))
+                model_id = getattr(model_id, 'id')
             else:
                 # use provided model_id string
                 model_id = self.model_id
